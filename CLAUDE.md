@@ -32,3 +32,17 @@ Minimal Vite + React 19 SPA, JavaScript (JSX) only, no TypeScript, no router, no
 - `eslint.config.js` — flat ESLint config: `@eslint/js` recommended + `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh` (Vite variant), browser globals, `dist/` ignored.
 
 Since the app is a single-file scaffold, expect that adding real CV-application features (sections, forms, data model) will involve introducing a component structure that doesn't exist yet — check with the user on how they want components/state organized before assuming a convention.
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues (`dooory/cv-application`), via the `gh` CLI. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Default five canonical labels (`needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`). See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context: root `CONTEXT.md` + `docs/adr/`. See `docs/agents/domain.md`.
