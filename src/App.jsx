@@ -1,5 +1,7 @@
+import { useState } from "react";
 import "./App.css";
 import Form from "./components/Form.jsx";
+import Preview from "./components/Preview.jsx";
 
 const formSchema = [
   {
@@ -102,10 +104,45 @@ const formSchema = [
   },
 ];
 
+function createTemplateFromSchema(schema) {
+  const template = {};
+
+  schema.forEach((group) => {
+    const groupData = {
+      id: group.id,
+      legend: group.legend,
+      fields: {},
+    };
+
+    group.fields.forEach((field) => {
+      groupData.fields[field.id] = {
+        value: "",
+        label: field.label,
+        id: field.id,
+      };
+    });
+
+    template[group.id] = groupData;
+  });
+
+  return template;
+}
+
 function App() {
+  const [cv, setCV] = useState(createTemplateFromSchema(formSchema));
+
+  function updateCV(groupId, fieldId, newValue) {
+    const copy = { ...cv };
+
+    copy[groupId].fields[fieldId].value = newValue;
+
+    setCV(copy);
+  }
+
   return (
     <>
-      <Form formSchema={formSchema}></Form>
+      <Form formSchema={formSchema} updateCV={updateCV}></Form>
+      <Preview groups={Object.values(cv)}></Preview>
     </>
   );
 }

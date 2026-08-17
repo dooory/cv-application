@@ -4,6 +4,7 @@ export default function Input({
   name,
   type,
   autoComplete,
+  handleChange,
 }) {
   return (
     <div className="input-container">
@@ -14,6 +15,7 @@ export default function Input({
           type={type}
           name={name}
           autoComplete={autoComplete}
+          onChange={handleChange}
         />
       </label>
     </div>
