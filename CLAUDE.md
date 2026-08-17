@@ -18,6 +18,8 @@ Package manager is **bun** (`bun.lock` is the lockfile — use `bun`, not `npm`/
 
 There is no test setup in this repo yet (no test runner in `package.json`).
 
+A user-level `/commit` Claude Code command (`~/.claude/commands/commit.md`) generates a Conventional Commits-formatted message for the currently staged diff.
+
 ## Architecture
 
 Minimal Vite + React 19 SPA, JavaScript (JSX) only, no TypeScript, no router, no state management library:
