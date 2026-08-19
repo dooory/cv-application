@@ -25,7 +25,7 @@ function FormInput({
     <div className="form-input-container">
       <label>
         {label}
-        {required ? "*" : null}
+        {required ? " (*)" : null}
         <Input
           type={type}
           value={value}
@@ -113,6 +113,7 @@ function FormSection({
 
   return (
     <form ref={formRef} onSubmit={(e) => e.preventDefault()}>
+      <p>Required fields (*)</p>
       <fieldset className="form-section">
         <legend>{legend}</legend>
 
@@ -172,6 +173,7 @@ export default function Form({
               legend={section.legend}
               data={cv[section.id]}
               repeatable={section.repeatable}
+              schema={section.template}
               updateField={(subsectionId, fieldId, value) =>
                 updateFormField(section.id, subsectionId, fieldId, value)
               }
