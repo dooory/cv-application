@@ -172,7 +172,6 @@ export default function Form({
               legend={section.legend}
               data={cv[section.id]}
               repeatable={section.repeatable}
-              schema={section.template}
               updateField={(subsectionId, fieldId, value) =>
                 updateFormField(section.id, subsectionId, fieldId, value)
               }

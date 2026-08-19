@@ -25,12 +25,6 @@ export function createSection(sectionSchema, id) {
   return section;
 }
 
-export function addSubSection(sectionSchema, section) {
-  section.subsections.push(createSubsection(sectionSchema.template));
-
-  return section;
-}
-
 export function createCVData(CVSchema) {
   const data = {};
 
