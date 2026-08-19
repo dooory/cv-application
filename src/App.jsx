@@ -2,147 +2,41 @@ import { useState } from "react";
 import "./App.css";
 import Form from "./components/Form.jsx";
 import Preview from "./components/Preview.jsx";
-
-const formSchema = [
-  {
-    id: "personalInfo",
-    legend: "Personal Info",
-    fields: [
-      {
-        id: "name",
-        label: "Full Name",
-        type: "text",
-        placeholder: "John Doe...",
-        required: true,
-        autoComplete: "name",
-      },
-      {
-        id: "email",
-        label: "Email",
-        type: "email",
-        placeholder: "johndoe@address.com...",
-        required: true,
-        autoComplete: "email",
-      },
-      {
-        id: "phone",
-        label: "Phone Number",
-        type: "tel",
-        placeholder: "01993278823...",
-        autoComplete: "phone",
-      },
-    ],
-  },
-  {
-    id: "educationalExperience",
-    legend: "Educational Experience",
-    repeatable: true,
-    fields: [
-      {
-        id: "title",
-        label: "Title",
-        type: "text",
-        placeholder: "Bachelor of ...",
-        required: true,
-      },
-      {
-        id: "startDate",
-        label: "Start Date",
-        type: "date",
-        required: true,
-      },
-      {
-        id: "endDate",
-        label: "End Date",
-        type: "date",
-      },
-      {
-        id: "description",
-        label: "Description",
-        type: "textarea",
-        placeholder: "Studied this and that...",
-      },
-    ],
-  },
-  {
-    id: "jobExperience",
-    legend: "Job Experience",
-    repeatable: true,
-    fields: [
-      {
-        id: "title",
-        label: "Title",
-        type: "text",
-        placeholder: "Junior Software Engineer",
-        required: true,
-      },
-      {
-        id: "companyTitle",
-        label: "Company",
-        type: "text",
-        placeholder: "A Business...",
-        required: true,
-      },
-      {
-        id: "startDate",
-        label: "Start Date",
-        type: "date",
-        required: true,
-      },
-      {
-        id: "endDate",
-        label: "End Date",
-        type: "date",
-      },
-      {
-        id: "description",
-        label: "Description",
-        type: "textarea",
-        placeholder: "Did this and that...",
-      },
-    ],
-  },
-];
-
-function createTemplateFromSchema(schema) {
-  const template = {};
-
-  schema.forEach((group) => {
-    const groupData = {
-      id: group.id,
-      legend: group.legend,
-      fields: {},
-    };
-
-    group.fields.forEach((field) => {
-      groupData.fields[field.id] = {
-        value: "",
-        label: field.label,
-        id: field.id,
-      };
-    });
-
-    template[group.id] = groupData;
-  });
-
-  return template;
-}
+import formSchema from "./data/formSchema";
+import { createCVData, createSubsection } from "./utils";
 
 function App() {
-  const [cv, setCV] = useState(createTemplateFromSchema(formSchema));
+  const [cv, setCV] = useState(createCVData(formSchema));
 
-  function updateCV(groupId, fieldId, newValue) {
-    const copy = { ...cv };
+  function addSubsection(parentId) {
+    const parentSchema = formSchema.find((section) => section.id == parentId);
+    const subsection = createSubsection(parentSchema?.template);
 
-    copy[groupId].fields[fieldId].value = newValue;
+    const cvCopy = { ...cv };
 
-    setCV(copy);
+    cvCopy[parentId].subsections.push(subsection);
+
+    setCV(cvCopy);
+  }
+
+  function updateFormField(sectionId, subsectionId, fieldId, value) {
+    const cvCopy = { ...cv };
+
+    cvCopy[sectionId].subsections[subsectionId][fieldId].value = value;
+
+    setCV(cvCopy);
   }
 
   return (
     <>
-      <Form formSchema={formSchema} updateCV={updateCV}></Form>
-      <Preview groups={Object.values(cv)}></Preview>
+      <h1>CV Application</h1>
+      <Form
+        cv={cv}
+        updateFormField={updateFormField}
+        schema={formSchema}
+        addSubsection={addSubsection}
+      ></Form>
+      <Preview cv={cv}></Preview>
     </>
   );
 }
