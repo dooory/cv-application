@@ -1,4 +1,6 @@
-function FormInput({ value, label, type, name, handleChange }) {
+import { useState } from "react";
+
+function FormInput({ isEditing, value, label, type, name, handleChange }) {
   return (
     <div className="form-input">
       <label>
@@ -8,6 +10,7 @@ function FormInput({ value, label, type, name, handleChange }) {
           value={value}
           name={name}
           onChange={handleChange}
+          disabled={!isEditing}
           autoComplete="off"
         ></input>
       </label>
@@ -15,7 +18,7 @@ function FormInput({ value, label, type, name, handleChange }) {
   );
 }
 
-function FormSubsection({ data, updateField }) {
+function FormSubsection({ data, updateField, isEditing }) {
   const fields = Object.values(data);
 
   return (
@@ -27,11 +30,28 @@ function FormSubsection({ data, updateField }) {
           type={field.type}
           key={field.id}
           name={field.id}
+          isEditing={isEditing}
           handleChange={(e) => updateField(field.id, e.target.value)}
         ></FormInput>
       ))}
     </div>
   );
+}
+
+function InteractButton({ editing, handleEdit, handleSave }) {
+  if (editing) {
+    return (
+      <button type="button" className="save-button" onClick={handleSave}>
+        Save
+      </button>
+    );
+  } else {
+    return (
+      <button type="button" className="edit-button" onClick={handleEdit}>
+        Edit
+      </button>
+    );
+  }
 }
 
 function FormSection({
@@ -43,6 +63,8 @@ function FormSection({
   updateField,
 }) {
   const subsections = data && data.subsections;
+
+  const [editing, setEditing] = useState(true);
 
   return (
     <fieldset className="form-section">
@@ -57,14 +79,20 @@ function FormSection({
               updateField={(fieldId, value) =>
                 updateField(index, fieldId, value)
               }
+              isEditing={editing}
             ></FormSubsection>
           );
         })}
 
       <div className="buttons-container">
-        <button type="button" className="save-button" onClick={saveSection}>
-          Save
-        </button>
+        <InteractButton
+          editing={editing}
+          handleEdit={() => setEditing(true)}
+          handleSave={() => {
+            setEditing(false);
+            saveSection();
+          }}
+        />
 
         {repeatable ? (
           <button type="button" onClick={addSubsection}>
