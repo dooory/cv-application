@@ -69,3 +69,10 @@ export function subsectionHasValue(subsection) {
 export function fieldHasValue(field) {
   return field.value !== "";
 }
+
+export function updateCVSection(cvSetter, sectionId, updater) {
+  cvSetter((prev) => ({
+    ...prev,
+    [sectionId]: updater(prev[sectionId]),
+  }));
+}

@@ -17,7 +17,6 @@ function FormInput({ value, label, type, name, handleChange }) {
 
 function FormSubsection({ data, updateField }) {
   const fields = Object.values(data);
-  console.log(fields);
 
   return (
     <div className="form-subsection">
@@ -35,7 +34,14 @@ function FormSubsection({ data, updateField }) {
   );
 }
 
-function FormSection({ legend, data, repeatable, addSubsection, updateField }) {
+function FormSection({
+  legend,
+  data,
+  repeatable,
+  addSubsection,
+  saveSection,
+  updateField,
+}) {
   const subsections = data && data.subsections;
 
   return (
@@ -55,16 +61,28 @@ function FormSection({ legend, data, repeatable, addSubsection, updateField }) {
           );
         })}
 
-      {repeatable ? (
-        <button type="button" onClick={addSubsection}>
-          Add {legend}
+      <div className="buttons-container">
+        <button type="button" className="save-button" onClick={saveSection}>
+          Save
         </button>
-      ) : null}
+
+        {repeatable ? (
+          <button type="button" onClick={addSubsection}>
+            Add {legend}
+          </button>
+        ) : null}
+      </div>
     </fieldset>
   );
 }
 
-export default function Form({ cv, schema, addSubsection, updateFormField }) {
+export default function Form({
+  cv,
+  schema,
+  saveSection,
+  addSubsection,
+  updateFormField,
+}) {
   return (
     <section className="cv-builder">
       <h2>Builder</h2>
@@ -80,6 +98,7 @@ export default function Form({ cv, schema, addSubsection, updateFormField }) {
                 updateField={(subsectionId, fieldId, value) =>
                   updateFormField(section.id, subsectionId, fieldId, value)
                 }
+                saveSection={() => saveSection(section.id)}
                 addSubsection={() => addSubsection(section.id)}
                 key={section.id}
               ></FormSection>

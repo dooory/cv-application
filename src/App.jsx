@@ -3,28 +3,38 @@ import "./App.css";
 import Form from "./components/Form.jsx";
 import Preview from "./components/Preview.jsx";
 import formSchema from "./data/formSchema";
-import { createCVData, createSubsection } from "./utils";
+import { createCVData, createSubsection, updateCVSection } from "./utils";
 
 function App() {
   const [cv, setCV] = useState(createCVData(formSchema));
+  const [savedCV, setSavedCV] = useState(structuredClone(cv));
 
   function addSubsection(parentId) {
     const parentSchema = formSchema.find((section) => section.id == parentId);
-    const subsection = createSubsection(parentSchema?.template);
+    const newSubsection = createSubsection(parentSchema?.template);
 
-    const cvCopy = { ...cv };
+    updateCVSection(setCV, parentId, (section) => {
+      const copy = structuredClone(section);
+      copy.subsections.push(newSubsection);
+      return copy;
+    });
+  }
 
-    cvCopy[parentId].subsections.push(subsection);
-
-    setCV(cvCopy);
+  function saveSection(sectionId) {
+    setCV((latestCV) => {
+      updateCVSection(setSavedCV, sectionId, () =>
+        structuredClone(latestCV[sectionId]),
+      );
+      return latestCV;
+    });
   }
 
   function updateFormField(sectionId, subsectionId, fieldId, value) {
-    const cvCopy = { ...cv };
-
-    cvCopy[sectionId].subsections[subsectionId][fieldId].value = value;
-
-    setCV(cvCopy);
+    updateCVSection(setCV, sectionId, (section) => {
+      const copy = structuredClone(section);
+      copy.subsections[subsectionId][fieldId].value = value;
+      return copy;
+    });
   }
 
   return (
@@ -35,8 +45,9 @@ function App() {
         updateFormField={updateFormField}
         schema={formSchema}
         addSubsection={addSubsection}
+        saveSection={saveSection}
       ></Form>
-      <Preview cv={cv}></Preview>
+      <Preview cv={savedCV}></Preview>
     </>
   );
 }
