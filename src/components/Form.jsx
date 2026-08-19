@@ -2,10 +2,13 @@ import { useRef, useState } from "react";
 
 function Input(props) {
   const className = "form-input";
-  if (props.type !== "textarea") {
-    return <input className={className} {...props}></input>;
+
+  const { type, ...rest } = props;
+
+  if (rest.type !== "textarea") {
+    return <input type={type} className={className} {...rest}></input>;
   } else {
-    return <textarea className={className} {...props}></textarea>;
+    return <textarea className={className} {...rest}></textarea>;
   }
 }
 
