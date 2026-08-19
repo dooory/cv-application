@@ -37,23 +37,43 @@ function FormInput({
   );
 }
 
-function FormSubsection({ data, updateField, isEditing }) {
+function FormSubsection({
+  data,
+  updateField,
+  isEditing,
+  deletable,
+  deleteSubsection,
+}) {
   const fields = Object.values(data);
 
   return (
     <div className="form-subsection">
-      {fields.map((field) => (
-        <FormInput
-          value={field.value}
-          label={field.label}
-          type={field.type}
-          key={field.id}
-          name={field.id}
-          required={field.required}
-          isEditing={isEditing}
-          handleChange={(e) => updateField(field.id, e.target.value)}
-        ></FormInput>
-      ))}
+      <div className="fields-container">
+        {fields.map((field) => (
+          <FormInput
+            value={field.value}
+            label={field.label}
+            type={field.type}
+            key={field.id}
+            name={field.id}
+            required={field.required}
+            isEditing={isEditing}
+            handleChange={(e) => updateField(field.id, e.target.value)}
+          ></FormInput>
+        ))}
+      </div>
+
+      <div className="subsection-buttons">
+        {isEditing && deletable ? (
+          <button
+            type="button"
+            className="remove-subsection-button"
+            onClick={deleteSubsection}
+          >
+            Remove
+          </button>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -79,6 +99,7 @@ function FormSection({
   data,
   repeatable,
   addSubsection,
+  deleteSubsection,
   saveSection,
   updateField,
 }) {
@@ -101,7 +122,9 @@ function FormSection({
                 updateField={(fieldId, value) =>
                   updateField(index, fieldId, value)
                 }
+                deletable={index !== 0}
                 isEditing={editing}
+                deleteSubsection={() => deleteSubsection(index)}
               ></FormSubsection>
             );
           })}
@@ -133,6 +156,7 @@ export default function Form({
   schema,
   saveSection,
   addSubsection,
+  deleteSubsection,
   updateFormField,
 }) {
   return (
@@ -151,6 +175,9 @@ export default function Form({
               }
               saveSection={() => saveSection(section.id)}
               addSubsection={() => addSubsection(section.id)}
+              deleteSubsection={(subsectionId) =>
+                deleteSubsection(section.id, subsectionId)
+              }
               key={section.id}
             ></FormSection>
           );

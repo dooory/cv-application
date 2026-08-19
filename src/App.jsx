@@ -37,6 +37,16 @@ function App() {
     });
   }
 
+  function deleteSubsection(sectionId, subsectionId) {
+    updateCVSection(setCV, sectionId, (section) => {
+      const copy = structuredClone(section);
+
+      copy.subsections.splice(subsectionId, 1);
+
+      return copy;
+    });
+  }
+
   return (
     <>
       <h1>CV Application</h1>
@@ -45,6 +55,7 @@ function App() {
         updateFormField={updateFormField}
         schema={formSchema}
         addSubsection={addSubsection}
+        deleteSubsection={deleteSubsection}
         saveSection={saveSection}
       ></Form>
       <Preview cv={savedCV}></Preview>
