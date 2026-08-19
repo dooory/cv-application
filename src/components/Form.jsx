@@ -1,14 +1,24 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-function FormInput({ isEditing, value, label, type, name, handleChange }) {
+function FormInput({
+  isEditing,
+  value,
+  label,
+  type,
+  name,
+  handleChange,
+  required,
+}) {
   return (
     <div className="form-input">
       <label>
         {label}
+        {required ? "*" : null}
         <input
           type={type}
           value={value}
           name={name}
+          required={required}
           onChange={handleChange}
           disabled={!isEditing}
           autoComplete="off"
@@ -30,6 +40,7 @@ function FormSubsection({ data, updateField, isEditing }) {
           type={field.type}
           key={field.id}
           name={field.id}
+          required={field.required}
           isEditing={isEditing}
           handleChange={(e) => updateField(field.id, e.target.value)}
         ></FormInput>
@@ -41,7 +52,7 @@ function FormSubsection({ data, updateField, isEditing }) {
 function InteractButton({ editing, handleEdit, handleSave }) {
   if (editing) {
     return (
-      <button type="button" className="save-button" onClick={handleSave}>
+      <button type="submit" className="save-button" onClick={handleSave}>
         Save
       </button>
     );
@@ -65,42 +76,46 @@ function FormSection({
   const subsections = data && data.subsections;
 
   const [editing, setEditing] = useState(true);
+  const formRef = useRef(null);
 
   return (
-    <fieldset className="form-section">
-      <legend>{legend}</legend>
+    <form ref={formRef} onSubmit={(e) => e.preventDefault()}>
+      <fieldset className="form-section">
+        <legend>{legend}</legend>
 
-      {subsections &&
-        subsections.map((subsection, index) => {
-          return (
-            <FormSubsection
-              key={index}
-              data={subsection}
-              updateField={(fieldId, value) =>
-                updateField(index, fieldId, value)
-              }
-              isEditing={editing}
-            ></FormSubsection>
-          );
-        })}
+        {subsections &&
+          subsections.map((subsection, index) => {
+            return (
+              <FormSubsection
+                key={index}
+                data={subsection}
+                updateField={(fieldId, value) =>
+                  updateField(index, fieldId, value)
+                }
+                isEditing={editing}
+              ></FormSubsection>
+            );
+          })}
 
-      <div className="buttons-container">
-        <InteractButton
-          editing={editing}
-          handleEdit={() => setEditing(true)}
-          handleSave={() => {
-            setEditing(false);
-            saveSection();
-          }}
-        />
+        <div className="buttons-container">
+          <InteractButton
+            editing={editing}
+            handleEdit={() => setEditing(true)}
+            handleSave={() => {
+              if (!formRef.current.reportValidity()) return;
+              setEditing(false);
+              saveSection();
+            }}
+          />
 
-        {repeatable ? (
-          <button type="button" onClick={addSubsection}>
-            Add {legend}
-          </button>
-        ) : null}
-      </div>
-    </fieldset>
+          {repeatable ? (
+            <button type="button" onClick={addSubsection}>
+              Add {legend}
+            </button>
+          ) : null}
+        </div>
+      </fieldset>
+    </form>
   );
 }
 
@@ -114,25 +129,23 @@ export default function Form({
   return (
     <section className="cv-builder">
       <h2>Builder</h2>
-      <div className="cv-form">
-        <form action="" id="builder-form">
-          {schema.map((section) => {
-            return (
-              <FormSection
-                legend={section.legend}
-                data={cv[section.id]}
-                repeatable={section.repeatable}
-                schema={section.template}
-                updateField={(subsectionId, fieldId, value) =>
-                  updateFormField(section.id, subsectionId, fieldId, value)
-                }
-                saveSection={() => saveSection(section.id)}
-                addSubsection={() => addSubsection(section.id)}
-                key={section.id}
-              ></FormSection>
-            );
-          })}
-        </form>
+      <div className="cv-form" id="builder-form">
+        {schema.map((section) => {
+          return (
+            <FormSection
+              legend={section.legend}
+              data={cv[section.id]}
+              repeatable={section.repeatable}
+              schema={section.template}
+              updateField={(subsectionId, fieldId, value) =>
+                updateFormField(section.id, subsectionId, fieldId, value)
+              }
+              saveSection={() => saveSection(section.id)}
+              addSubsection={() => addSubsection(section.id)}
+              key={section.id}
+            ></FormSection>
+          );
+        })}
       </div>
     </section>
   );
