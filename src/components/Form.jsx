@@ -1,5 +1,14 @@
 import { useRef, useState } from "react";
 
+function Input(props) {
+  const className = "form-input";
+  if (props.type !== "textarea") {
+    return <input className={className} {...props}></input>;
+  } else {
+    return <textarea className={className} {...props}></textarea>;
+  }
+}
+
 function FormInput({
   isEditing,
   value,
@@ -10,11 +19,11 @@ function FormInput({
   required,
 }) {
   return (
-    <div className="form-input">
+    <div className="form-input-container">
       <label>
         {label}
         {required ? "*" : null}
-        <input
+        <Input
           type={type}
           value={value}
           name={name}
@@ -22,7 +31,7 @@ function FormInput({
           onChange={handleChange}
           disabled={!isEditing}
           autoComplete="off"
-        ></input>
+        ></Input>
       </label>
     </div>
   );
