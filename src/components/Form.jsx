@@ -117,7 +117,7 @@ function FormSection({
             }}
           />
 
-          {repeatable ? (
+          {repeatable && editing ? (
             <button type="button" onClick={addSubsection}>
               Add {legend}
             </button>
