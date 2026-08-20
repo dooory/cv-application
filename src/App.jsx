@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./App.css";
+import "./styles/App.css";
 import Form from "./components/Form.jsx";
 import Preview from "./components/Preview.jsx";
 import formSchema from "./data/formSchema";

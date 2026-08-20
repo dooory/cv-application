@@ -1,3 +1,4 @@
+import "../styles/Form.css";
 import { useRef, useState } from "react";
 
 function Input(props) {
@@ -113,7 +114,6 @@ function FormSection({
 
   return (
     <form ref={formRef} onSubmit={(e) => e.preventDefault()}>
-      <p>Required fields (*)</p>
       <fieldset className="form-section">
         <legend>{legend}</legend>
 
@@ -165,7 +165,10 @@ export default function Form({
 }) {
   return (
     <section className="cv-builder">
-      <h2>Builder</h2>
+      <header>
+        <h2>Builder</h2>
+      </header>
+      <p>Required fields (*)</p>
       <div className="cv-form" id="builder-form">
         {schema.map((section) => {
           return (

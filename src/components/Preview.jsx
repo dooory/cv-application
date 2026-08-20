@@ -1,3 +1,4 @@
+import "../styles/Preview.css";
 import { fieldHasValue, sectionHasValue, subsectionHasValue } from "../utils";
 
 function PreviewField({ label, value }) {
