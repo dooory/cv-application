@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project state
 
-This repo is currently the unmodified Vite + React scaffold (see git log: "Initial commit", "scaffold project"). `src/App.jsx` is still the default Vite starter markup/counter, not CV-application-specific content yet, and it references `./assets/react.svg`, `./assets/vite.svg`, and `./assets/hero.png`, none of which exist in `src/` — expect a broken image/dev-server error until those assets are added or the imports are replaced.
+This is a working schema-driven CV builder: a form (left/top) that edits CV data, and a live preview (right/bottom) that renders only the saved, non-empty parts of it. The original Vite scaffold markup/counter has been fully replaced. There are no unresolved asset imports.
 
 ## Commands
 
@@ -22,13 +22,21 @@ A user-level `/commit` Claude Code command (`~/.claude/commands/commit.md`) gene
 
 ## Architecture
 
-Minimal Vite + React 19 SPA, JavaScript (JSX) only, no TypeScript, no router, no state management library:
+Vite + React 19 SPA, JavaScript (JSX) only, no TypeScript, no router, no state management library. `jsconfig.json` enables `checkJs` so editors still type-check via JSDoc/inference.
 
 - `index.html` — Vite entry HTML; mounts to `#root`.
 - `src/main.jsx` — creates the React root and renders `<App />` inside `<StrictMode>`.
-- `src/App.jsx` — single top-level component; all UI currently lives here (no component directory structure exists yet).
-- `src/App.css` / `src/index.css` — plain CSS, no CSS-in-JS or CSS modules.
+- `src/App.jsx` — top-level component. Owns the two top-level pieces of state: `cv` (live, editable data) and `savedCV` (last-saved snapshot, what `Preview` renders). Defines the mutation callbacks (`addSubsection`, `saveSection`, `updateFormField`, `deleteSubsection`) and passes them down as props; state is not otherwise lifted or shared via context.
+- `src/data/formSchema.js` — the single source of truth for CV structure: an array of section definitions (`id`, `legend`, optional `repeatable`, and a `template` array of field definitions — `id`, `label`, `type`, `placeholder`, `required`, `autoComplete`). Adding/editing a CV field means editing this file; `Form` and the CV data shape both derive from it.
+- `src/utils.js` — pure helpers that build CV data from the schema (`createCVData`, `createSection`, `createSubsection`, `createField`) and query it (`fieldHasValue`, `subsectionHasValue`, `sectionHasValue`), plus the generic `updateCVSection(setter, sectionId, updater)` used by every mutation in `App.jsx` to immutably update one section's slice of state.
+- `src/components/Form.jsx` — the editable builder. `Form` maps `formSchema` to one `FormSection` per section; each `FormSection` is its own `<form>` with local `editing` state, toggled between an "Edit" and "Save" (`InteractButton`) — saving calls `formRef.current.reportValidity()` first, so required-field validation gates the save. `repeatable` sections render an "Add" button that appends a subsection (`FormSubsection`), and any subsection past the first can be removed. `Input`/`FormInput` render the actual field, switching between `<input>` and `<textarea>` based on `type`.
+- `src/components/Preview.jsx` — read-only rendering of `savedCV`. Sections/subsections/fields that have no value are filtered out (`sectionHasValue`/`subsectionHasValue`/`fieldHasValue` from `utils.js`), so the preview only ever shows what's actually been filled in and saved.
+- `src/styles/` — plain CSS per component (`App.css`, `Form.css`, `Preview.css`) plus `index.css` for global/root styles. No CSS-in-JS or CSS modules.
 - `vite.config.js` — just the `@vitejs/plugin-react` plugin, no aliases or custom config.
 - `eslint.config.js` — flat ESLint config: `@eslint/js` recommended + `eslint-plugin-react-hooks` + `eslint-plugin-react-refresh` (Vite variant), browser globals, `dist/` ignored.
 
-Since the app is a single-file scaffold, expect that adding real CV-application features (sections, forms, data model) will involve introducing a component structure that doesn't exist yet — check with the user on how they want components/state organized before assuming a convention.
+### Data flow / conventions worth knowing before editing
+
+- CV data shape mirrors the schema: `{ [sectionId]: { id, legend, subsections: [ { [fieldId]: { ...fieldSchema, value } } ] } }`. `cv` and `savedCV` are both this shape; `savedCV` is only ever replaced with a `structuredClone` of a section from `cv`, never mutated in place.
+- Adding a new section or field is a schema-only change in `formSchema.js` — no changes needed in `Form.jsx`/`Preview.jsx`/`utils.js` unless the new field needs a new `type` (see `Input` in `Form.jsx`, which currently branches only on `"textarea"` vs. everything else being passed straight to `<input type>`).
+- Per-section edit/save state lives inside `FormSection` (`useState`), not in `App.jsx` — `App.jsx` only tracks the data itself, not which sections are mid-edit.
