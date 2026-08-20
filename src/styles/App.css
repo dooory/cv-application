@@ -1,0 +1,37 @@
+.app-header {
+  padding: 2.5rem clamp(1rem, 4vw, 3rem) 1.5rem;
+  text-align: center;
+}
+
+.app-header h1 {
+  display: inline-block;
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--color-primary), #06b6d4);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.app-header p {
+  margin-top: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+}
+
+.app-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 3rem) 3rem;
+}
+
+@media (max-width: 900px) {
+  .app-layout {
+    grid-template-columns: 1fr;
+  }
+}

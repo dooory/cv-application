@@ -49,18 +49,21 @@ function App() {
 
   return (
     <>
-      <header>
+      <header className="app-header">
         <h1>CV Application</h1>
+        <p>Fill in the builder and save each section to update your preview.</p>
       </header>
-      <Form
-        cv={cv}
-        updateFormField={updateFormField}
-        schema={formSchema}
-        addSubsection={addSubsection}
-        deleteSubsection={deleteSubsection}
-        saveSection={saveSection}
-      ></Form>
-      <Preview cv={savedCV}></Preview>
+      <main className="app-layout">
+        <Form
+          cv={cv}
+          updateFormField={updateFormField}
+          schema={formSchema}
+          addSubsection={addSubsection}
+          deleteSubsection={deleteSubsection}
+          saveSection={saveSection}
+        ></Form>
+        <Preview cv={savedCV}></Preview>
+      </main>
     </>
   );
 }

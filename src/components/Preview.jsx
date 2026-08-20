@@ -4,7 +4,8 @@ import { fieldHasValue, sectionHasValue, subsectionHasValue } from "../utils";
 function PreviewField({ label, value }) {
   return (
     <div className="preview-field">
-      {label}: {value}
+      <span className="preview-field-label">{label}</span>
+      <span className="preview-field-value">{value}</span>
     </div>
   );
 }
